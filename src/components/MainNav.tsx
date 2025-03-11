@@ -18,29 +18,29 @@ const MainNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:relative md:border-t-0 md:px-0 md:py-0">
-      <div className="flex justify-between items-center max-w-screen-xl mx-auto md:justify-start md:space-x-8">
+    <nav className="bg-white border-b border-gray-200 px-4 py-2">
+      <div className="flex justify-between items-center max-w-screen-xl mx-auto">
         {navItems.map((item) => (
           <Button
             key={item.route}
             variant="ghost"
             className={cn(
-              "flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-2",
+              "flex items-center space-x-2",
               active === item.route ? "text-primary" : "text-gray-500"
             )}
             onClick={() => setActive(item.route)}
           >
             <item.icon className="h-5 w-5" />
-            <span className="text-xs md:text-sm">{item.name}</span>
+            <span>{item.name}</span>
           </Button>
         ))}
         <Button
           variant="ghost"
-          className="flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-2 text-gray-500"
+          className="flex items-center space-x-2 text-gray-500"
           onClick={signOut}
         >
           <LogOut className="h-5 w-5" />
-          <span className="text-xs md:text-sm">Logout</span>
+          <span>Logout</span>
         </Button>
       </div>
     </nav>

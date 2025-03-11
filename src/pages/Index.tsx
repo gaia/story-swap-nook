@@ -12,7 +12,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-serif font-bold text-primary">BookSwap BCN</h1>
+          <h1 className="text-2xl font-serif font-bold text-primary">BookNook.space</h1>
           {!user && (
             <Button variant="outline" asChild>
               <Link to="/auth">Sign In</Link>
@@ -20,6 +20,8 @@ const Index = () => {
           )}
         </div>
       </header>
+
+      {user && <MainNav />}
 
       <main className="flex-grow container mx-auto px-4 py-8">
         {user ? (
@@ -63,8 +65,6 @@ const Index = () => {
           </section>
         )}
       </main>
-
-      <MainNav />
     </div>
   );
 };
