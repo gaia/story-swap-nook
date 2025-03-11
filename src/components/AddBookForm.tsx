@@ -1,17 +1,40 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { validateISBN, fetchBookData } from '@/lib/isbn';
 import { supabase } from '@/lib/supabase';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import BookList from './BookList';
 
 const AddBookForm = () => {
   const [isbn, setIsbn] = useState('');
   const [loading, setLoading] = useState(false);
+  const [books, setBooks] = useState([]);
   const { user } = useAuth();
   const { toast } = useToast();
+
+  const fetchUserBooks = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('books')
+      .select('*')
+      .eq('owner_id', user.id)
+      .order('created_at', { ascending: false });
+      
+    if (error) {
+      console.error('Error fetching books:', error);
+      return;
+    }
+    
+    setBooks(data);
+  };
+
+  useEffect(() => {
+    fetchUserBooks();
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +77,7 @@ const AddBookForm = () => {
       });
       
       setIsbn('');
+      fetchUserBooks(); // Refresh the books list
     } catch (error) {
       console.error('Error adding book:', error);
       toast({
@@ -67,24 +91,28 @@ const AddBookForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
-      <div className="space-y-2">
-        <label htmlFor="isbn" className="block text-sm font-medium text-gray-700">
-          Enter ISBN (10 or 13 digits)
-        </label>
-        <Input
-          id="isbn"
-          type="text"
-          value={isbn}
-          onChange={(e) => setIsbn(e.target.value)}
-          placeholder="Enter ISBN-10 or ISBN-13"
-          disabled={loading}
-        />
-      </div>
-      <Button type="submit" disabled={loading}>
-        {loading ? 'Adding Book...' : 'Add Book'}
-      </Button>
-    </form>
+    <div className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+        <div className="space-y-2">
+          <label htmlFor="isbn" className="block text-sm font-medium text-gray-700">
+            Enter ISBN (10 or 13 digits)
+          </label>
+          <Input
+            id="isbn"
+            type="text"
+            value={isbn}
+            onChange={(e) => setIsbn(e.target.value)}
+            placeholder="Enter ISBN-10 or ISBN-13"
+            disabled={loading}
+          />
+        </div>
+        <Button type="submit" disabled={loading}>
+          {loading ? 'Adding Book...' : 'Add Book'}
+        </Button>
+      </form>
+
+      <BookList books={books} onBookRemoved={fetchUserBooks} />
+    </div>
   );
 };
 
