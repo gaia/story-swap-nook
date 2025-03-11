@@ -1,11 +1,13 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { BookOpen, Library, MapPin, MessageCircle, User } from "lucide-react";
+import { BookOpen, Library, LogOut, MapPin, MessageCircle, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from '@/contexts/AuthContext';
 
 const MainNav = () => {
   const [active, setActive] = useState('discover');
+  const { signOut } = useAuth();
 
   const navItems = [
     { name: 'Discover', icon: BookOpen, route: 'discover' },
@@ -32,6 +34,14 @@ const MainNav = () => {
             <span className="text-xs md:text-sm">{item.name}</span>
           </Button>
         ))}
+        <Button
+          variant="ghost"
+          className="flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-2 text-gray-500"
+          onClick={signOut}
+        >
+          <LogOut className="h-5 w-5" />
+          <span className="text-xs md:text-sm">Logout</span>
+        </Button>
       </div>
     </nav>
   );

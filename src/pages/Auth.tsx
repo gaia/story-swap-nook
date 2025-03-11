@@ -7,37 +7,67 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 const Auth = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+    location: '',
+  });
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: {
+              full_name: formData.fullName,
+            },
+          },
         });
-        if (error) throw error;
-        toast.success('Check your email to confirm your account');
+
+        if (signUpError) throw signUpError;
+
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            full_name: formData.fullName,
+            location: formData.location,
+          })
+          .eq('id', (await supabase.auth.getUser()).data.user?.id);
+
+        if (profileError) throw profileError;
+
+        toast.success('Successfully signed up!');
+        navigate('/');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+          email: formData.email,
+          password: formData.password,
         });
+
         if (error) throw error;
         navigate('/');
       }
     } catch (error: any) {
       toast.error(error.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
   return (
@@ -51,28 +81,50 @@ const Auth = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <Input
+              name="email"
               type="email"
               placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
               required
             />
             <Input
+              name="password"
               type="password"
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
               required
             />
+            {isSignUp && (
+              <>
+                <Input
+                  name="fullName"
+                  type="text"
+                  placeholder="Full Name"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  required
+                />
+                <Input
+                  name="location"
+                  type="text"
+                  placeholder="Location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  required
+                />
+              </>
+            )}
           </div>
 
           <div className="space-y-4">
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading}
+              disabled={loading}
             >
-              {isLoading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
+              {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
             </Button>
             <Button
               type="button"
