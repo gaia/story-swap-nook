@@ -2,6 +2,7 @@
 import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -9,7 +10,9 @@ const Index = () => {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-serif font-bold text-primary">BookSwap BCN</h1>
-          <Button variant="outline">Sign In</Button>
+          <Button variant="outline" asChild>
+            <Link to="/auth">Sign In</Link>
+          </Button>
         </div>
       </header>
 
