@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { validateISBN, fetchBookData } from '@/lib/isbn';
@@ -6,12 +5,24 @@ import { supabase } from '@/lib/supabase';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import BookList from './BookList';
 
 const AddBookForm = () => {
   const [isbn, setIsbn] = useState('');
   const [loading, setLoading] = useState(false);
   const [books, setBooks] = useState([]);
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
+  const [pendingIsbn, setPendingIsbn] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -36,6 +47,56 @@ const AddBookForm = () => {
     fetchUserBooks();
   }, [user]);
 
+  const checkForDuplicate = async (cleanISBN: string) => {
+    const { data } = await supabase
+      .from('books')
+      .select('isbn_10, isbn_13')
+      .eq('owner_id', user?.id)
+      .or(`isbn_10.eq.${cleanISBN},isbn_13.eq.${cleanISBN}`);
+
+    return data && data.length > 0;
+  };
+
+  const handleDuplicateConfirm = async () => {
+    if (!pendingIsbn) return;
+    await addBook(pendingIsbn);
+    setPendingIsbn(null);
+    setDuplicateDialogOpen(false);
+  };
+
+  const addBook = async (cleanISBN: string) => {
+    setLoading(true);
+    try {
+      const bookData = await fetchBookData(cleanISBN);
+      
+      const { error } = await supabase.from('books').insert({
+        owner_id: user?.id,
+        isbn_10: cleanISBN.length === 10 ? cleanISBN : null,
+        isbn_13: cleanISBN.length === 13 ? cleanISBN : null,
+        ...bookData
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success!",
+        description: "Book added successfully"
+      });
+      
+      setIsbn('');
+      fetchUserBooks();
+    } catch (error) {
+      console.error('Error adding book:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to add book",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -58,36 +119,14 @@ const AddBookForm = () => {
       return;
     }
 
-    setLoading(true);
-    try {
-      const bookData = await fetchBookData(cleanISBN);
-      
-      const { error } = await supabase.from('books').insert({
-        owner_id: user.id,
-        isbn_10: cleanISBN.length === 10 ? cleanISBN : null,
-        isbn_13: cleanISBN.length === 13 ? cleanISBN : null,
-        ...bookData
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success!",
-        description: "Book added successfully"
-      });
-      
-      setIsbn('');
-      fetchUserBooks(); // Refresh the books list
-    } catch (error) {
-      console.error('Error adding book:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to add book",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
+    const isDuplicate = await checkForDuplicate(cleanISBN);
+    if (isDuplicate) {
+      setPendingIsbn(cleanISBN);
+      setDuplicateDialogOpen(true);
+      return;
     }
+
+    await addBook(cleanISBN);
   };
 
   return (
@@ -110,6 +149,28 @@ const AddBookForm = () => {
           {loading ? 'Adding Book...' : 'Add Book'}
         </Button>
       </form>
+
+      <AlertDialog open={duplicateDialogOpen} onOpenChange={setDuplicateDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Duplicate Book</AlertDialogTitle>
+            <AlertDialogDescription>
+              Do you mean to add this book again? You should only do that when you have multiple copies of the same book.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setPendingIsbn(null);
+              setDuplicateDialogOpen(false);
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleDuplicateConfirm}>
+              Add Duplicate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <BookList books={books} onBookRemoved={fetchUserBooks} />
     </div>
