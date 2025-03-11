@@ -47,12 +47,13 @@ const AddBookForm = () => {
     fetchUserBooks();
   }, [user]);
 
-  const checkForDuplicate = async (cleanISBN: string) => {
+  const checkForDuplicate = async (bookData: { title: string; author: string }) => {
     const { data } = await supabase
       .from('books')
-      .select('isbn_10, isbn_13')
+      .select('title, author')
       .eq('owner_id', user?.id)
-      .or(`isbn_10.eq.${cleanISBN},isbn_13.eq.${cleanISBN}`);
+      .eq('title', bookData.title)
+      .eq('author', bookData.author);
 
     return data && data.length > 0;
   };
@@ -119,14 +120,24 @@ const AddBookForm = () => {
       return;
     }
 
-    const isDuplicate = await checkForDuplicate(cleanISBN);
-    if (isDuplicate) {
-      setPendingIsbn(cleanISBN);
-      setDuplicateDialogOpen(true);
-      return;
-    }
+    try {
+      const bookData = await fetchBookData(cleanISBN);
+      const isDuplicate = await checkForDuplicate(bookData);
+      if (isDuplicate) {
+        setPendingIsbn(cleanISBN);
+        setDuplicateDialogOpen(true);
+        return;
+      }
 
-    await addBook(cleanISBN);
+      await addBook(cleanISBN);
+    } catch (error) {
+      console.error('Error checking for duplicate:', error);
+      toast({
+        title: "Error",
+        description: "Failed to check for duplicate book",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
