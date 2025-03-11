@@ -32,8 +32,11 @@ const validateISBN13 = (isbn: string): boolean => {
     sum += digit * (i % 2 === 0 ? 1 : 3);
   }
   
+  const lastDigit = parseInt(isbn[12]);
+  if (isNaN(lastDigit)) return false;
+  
   const checksum = (10 - (sum % 10)) % 10;
-  return parseInt(isbn[12]) === checksum;
+  return lastDigit === checksum;
 };
 
 export const fetchBookData = async (isbn: string) => {
