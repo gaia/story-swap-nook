@@ -9,7 +9,6 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import Messages from "./pages/Messages";
 
 const queryClient = new QueryClient();
 
@@ -28,14 +27,6 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Index />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/messages" 
-              element={
-                <ProtectedRoute>
-                  <Messages />
                 </ProtectedRoute>
               } 
             />

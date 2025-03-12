@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -14,6 +15,7 @@ const Auth = () => {
     email: '',
     password: '',
     fullName: '',
+    phoneNumber: '',
     location: 'Barcelona',
   });
   const navigate = useNavigate();
@@ -24,6 +26,11 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
+        // Validate phone number
+        if (!/^[0-9]+$/.test(formData.phoneNumber)) {
+          throw new Error('Phone number must contain only numbers (including country code)');
+        }
+
         const { error: signUpError } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -41,6 +48,7 @@ const Auth = () => {
           .update({
             full_name: formData.fullName,
             location: formData.location,
+            phone_number: formData.phoneNumber,
           })
           .eq('id', (await supabase.auth.getUser()).data.user?.id);
 
@@ -113,6 +121,15 @@ const Auth = () => {
                     placeholder="Full Name"
                     value={formData.fullName}
                     onChange={handleChange}
+                    required
+                  />
+                  <Input
+                    name="phoneNumber"
+                    type="tel"
+                    placeholder="Phone Number (with country code, numbers only)"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    pattern="[0-9]+"
                     required
                   />
                   <Select

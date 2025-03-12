@@ -113,43 +113,16 @@ export type Database = {
           },
         ]
       }
-      messages: {
-        Row: {
-          content: string
-          created_at: string
-          id: string
-          read_at: string | null
-          receiver_id: string
-          sender_id: string
-          updated_at: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          id?: string
-          read_at?: string | null
-          receiver_id: string
-          sender_id: string
-          updated_at?: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          read_at?: string | null
-          receiver_id?: string
-          sender_id?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
           full_name: string | null
           id: string
+          latitude: number | null
           location: string | null
+          longitude: number | null
+          phone_number: string | null
           updated_at: string
           username: string | null
         }
@@ -158,7 +131,10 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
+          phone_number?: string | null
           updated_at?: string
           username?: string | null
         }
@@ -167,7 +143,10 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
+          phone_number?: string | null
           updated_at?: string
           username?: string | null
         }
