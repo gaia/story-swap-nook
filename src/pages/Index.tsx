@@ -1,3 +1,4 @@
+
 import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Users } from "lucide-react";
@@ -42,7 +43,7 @@ const Index = () => {
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-              <div className="book-card p-6">
+              <div className="p-6 border rounded-lg bg-white">
                 <BookOpen className="w-10 h-10 text-primary mb-4 mx-auto" />
                 <h3 className="text-xl font-semibold mb-2">Share Your Books</h3>
                 <p className="text-gray-600">
@@ -50,7 +51,7 @@ const Index = () => {
                 </p>
               </div>
               
-              <div className="book-card p-6">
+              <div className="p-6 border rounded-lg bg-white">
                 <Users className="w-10 h-10 text-primary mb-4 mx-auto" />
                 <h3 className="text-xl font-semibold mb-2">Meet Local Parents</h3>
                 <p className="text-gray-600">
@@ -59,8 +60,8 @@ const Index = () => {
               </div>
             </div>
 
-            <Button size="lg" className="mt-8">
-              Join the Community
+            <Button size="lg" asChild className="mt-8">
+              <Link to="/auth">Join the Community</Link>
             </Button>
           </section>
         )}
