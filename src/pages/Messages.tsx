@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { Button } from "@/components/ui/button";
 import MessageList from '@/components/messages/MessageList';
 import MessageComposer from '@/components/messages/MessageComposer';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 type Message = {
   id: string;
@@ -63,7 +63,6 @@ const Messages = () => {
 
     fetchMessages();
 
-    // Subscribe to new messages with correct channel configuration
     const channel = supabase
       .channel('messages_channel')
       .on(
@@ -82,7 +81,7 @@ const Messages = () => {
           }
         }
       )
-      .subscribe();
+      .subscribe() as RealtimeChannel;
 
     return () => {
       supabase.removeChannel(channel);
