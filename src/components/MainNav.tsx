@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { BookOpen, Library, LogOut, User } from "lucide-react";
@@ -6,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const MainNav = () => {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [active, setActive] = useState('');
@@ -15,6 +16,9 @@ const MainNav = () => {
     const currentRoute = location.pathname.replace('/', '') || 'discover';
     setActive(currentRoute);
   }, [location]);
+
+  // If user is not authenticated, don't render the navigation
+  if (!user) return null;
 
   const navItems = [
     { name: 'Discover', icon: BookOpen, route: 'discover' },
