@@ -2,7 +2,7 @@
 const Footer = () => {
   return (
     <footer className="py-6 border-t mt-auto">
-      <div className="w-3/4 max-w-screen-xl mx-auto text-center text-sm text-gray-600">
+      <div className="container mx-auto px-4 text-center text-sm text-gray-600">
         <p>© 2025 BookNook. This software is licensed under the</p>
         <p>GNU Affero General Public License, Version 3 (AGPLv3),</p>
         <p>with an additional Non-Commercial Clause.</p>
