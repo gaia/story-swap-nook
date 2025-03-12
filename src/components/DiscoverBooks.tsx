@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -55,7 +56,7 @@ const DiscoverBooks = () => {
 
   return (
     <div className="space-y-6">
-      {books.map((book) => (
+      {books?.map((book) => (
         <div key={book.id} className="flex gap-4 p-4 bg-white rounded-lg shadow">
           {book.cover_url && (
             <img 
