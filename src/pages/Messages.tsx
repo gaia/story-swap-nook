@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from "@/components/ui/button";
 import MessageList from '@/components/messages/MessageList';
 import MessageComposer from '@/components/messages/MessageComposer';
-import { RealtimeChannel } from '@supabase/supabase-js';
+import Footer from '@/components/Footer';
 
 type Message = {
   id: string;
@@ -83,39 +83,42 @@ const Messages = () => {
   }, [selectedUserId, user?.id]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Messages</h1>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold mb-4">Users</h2>
-          {users.map((otherUser) => (
-            <Button
-              key={otherUser.id}
-              variant={selectedUserId === otherUser.id ? "default" : "outline"}
-              className="w-full justify-start"
-              onClick={() => setSelectedUserId(otherUser.id)}
-            >
-              {otherUser.full_name || otherUser.username || 'Anonymous User'}
-            </Button>
-          ))}
-        </div>
-        
-        <div className="md:col-span-3">
-          {selectedUserId ? (
-            <div className="space-y-4">
-              <MessageList messages={messages} currentUserId={user?.id} />
-              <MessageComposer 
-                receiverId={selectedUserId}
-                onMessageSent={(message) => setMessages(current => [...current, message])}
-              />
-            </div>
-          ) : (
-            <div className="text-center text-gray-500">
-              Select a user to start messaging
-            </div>
-          )}
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-grow container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-6">Messages</h1>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold mb-4">Users</h2>
+            {users.map((otherUser) => (
+              <Button
+                key={otherUser.id}
+                variant={selectedUserId === otherUser.id ? "default" : "outline"}
+                className="w-full justify-start"
+                onClick={() => setSelectedUserId(otherUser.id)}
+              >
+                {otherUser.full_name || otherUser.username || 'Anonymous User'}
+              </Button>
+            ))}
+          </div>
+          
+          <div className="md:col-span-3">
+            {selectedUserId ? (
+              <div className="space-y-4">
+                <MessageList messages={messages} currentUserId={user?.id} />
+                <MessageComposer 
+                  receiverId={selectedUserId}
+                  onMessageSent={(message) => setMessages(current => [...current, message])}
+                />
+              </div>
+            ) : (
+              <div className="text-center text-gray-500">
+                Select a user to start messaging
+              </div>
+            )}
+          </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

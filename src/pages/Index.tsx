@@ -5,6 +5,7 @@ import { BookOpen, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import AddBookForm from "@/components/AddBookForm";
 import { useAuth } from "@/contexts/AuthContext";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   const { user } = useAuth();
@@ -12,13 +13,17 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-serif font-bold text-primary">BookNook.space</h1>
-          {!user && (
-            <Button variant="outline" asChild>
-              <Link to="/auth">Sign In</Link>
-            </Button>
-          )}
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <Link to="/" className="text-2xl font-serif font-bold text-primary hover:text-primary/90 transition-colors">
+              BookNook.space
+            </Link>
+            {!user && (
+              <Button variant="outline" asChild>
+                <Link to="/auth">Sign In</Link>
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -66,6 +71,8 @@ const Index = () => {
           </section>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 };
