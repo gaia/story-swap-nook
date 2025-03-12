@@ -5,9 +5,16 @@ import { Button } from "@/components/ui/button";
 import MessageList from '@/components/messages/MessageList';
 import MessageComposer from '@/components/messages/MessageComposer';
 import { RealtimeChannel } from '@supabase/supabase-js';
-import { Database } from '@/lib/database.types';
 
-type Message = Database['public']['Tables']['messages']['Row'];
+type Message = {
+  id: string;
+  content: string;
+  sender_id: string;
+  receiver_id: string;
+  read_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 const Messages = () => {
   const { user, profile } = useAuth();
