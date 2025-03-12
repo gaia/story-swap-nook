@@ -63,15 +63,16 @@ const Messages = () => {
 
     fetchMessages();
 
-    // Subscribe to new messages
+    // Subscribe to new messages with correct channel configuration
     const channel = supabase
       .channel('messages_channel')
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'messages',
+          filter: `sender_id=eq.${user?.id},receiver_id=eq.${selectedUserId}`
         },
         (payload: RealtimePayload) => {
           if (payload.new && 
