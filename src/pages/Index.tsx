@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { BookOpen, Users } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -70,11 +69,6 @@ const Index = () => {
           <Button size="lg" asChild className="mt-8">
             <Link to="/auth">Join the Community</Link>
           </Button>
-        </section>
-
-        <section className="mt-16">
-          <h2 className="text-2xl font-bold mb-6">Available Books</h2>
-          <DiscoverBooks />
         </section>
       </main>
 
