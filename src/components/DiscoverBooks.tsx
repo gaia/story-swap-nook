@@ -23,17 +23,22 @@ const DiscoverBooks = () => {
   const { data: books, isLoading } = useQuery({
     queryKey: ['available-books'],
     queryFn: async () => {
+      console.log('Fetching available books...'); // Added for debugging
       const { data, error } = await supabase
         .from('books')
         .select('*')
         .eq('status', 'available')
-        .neq('owner_id', user?.id) // Don't show user's own books
+        .neq('owner_id', user?.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching books:', error); // Added for debugging
+        throw error;
+      }
+      console.log('Fetched books:', data); // Added for debugging
       return data as Book[];
     },
-    enabled: !!user, // Only fetch if user is authenticated
+    enabled: !!user,
   });
 
   if (!user) {
