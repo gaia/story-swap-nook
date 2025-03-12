@@ -6,6 +6,7 @@ import AddBookForm from "@/components/AddBookForm";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthenticatedLayout from "@/components/layouts/AuthenticatedLayout";
 import Footer from "@/components/Footer";
+import DiscoverBooks from "@/components/DiscoverBooks";
 
 const Index = () => {
   const { user } = useAuth();
@@ -69,6 +70,11 @@ const Index = () => {
           <Button size="lg" asChild className="mt-8">
             <Link to="/auth">Join the Community</Link>
           </Button>
+        </section>
+
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold mb-6">Available Books</h2>
+          <DiscoverBooks />
         </section>
       </main>
 

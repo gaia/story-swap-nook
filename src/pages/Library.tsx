@@ -63,17 +63,21 @@ const Library = () => {
           
           <TabsContent value="owned" className="mt-6">
             {ownedBooks.length > 0 ? (
-              <BookList books={ownedBooks} onBookRemoved={() => {
-                // Refresh the owned books list
-                const fetchOwnedBooks = async () => {
-                  const { data } = await supabase
-                    .from('books')
-                    .select('*')
-                    .eq('owner_id', user.id);
-                  setOwnedBooks(data || []);
-                };
-                fetchOwnedBooks();
-              }} />
+              <BookList 
+                books={ownedBooks} 
+                onBookRemoved={() => {
+                  // Refresh the owned books list
+                  const fetchOwnedBooks = async () => {
+                    const { data } = await supabase
+                      .from('books')
+                      .select('*')
+                      .eq('owner_id', user.id);
+                    setOwnedBooks(data || []);
+                  };
+                  fetchOwnedBooks();
+                }}
+                showAvailabilityToggle={true}
+              />
             ) : (
               <p className="text-center text-gray-500">You haven't added any books yet.</p>
             )}
