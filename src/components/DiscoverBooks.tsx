@@ -26,7 +26,8 @@ const DiscoverBooks = () => {
 
       if (error) throw error;
       return data as Book[];
-    }
+    },
+    refetchInterval: 2000, // Refetch every 2 seconds to ensure data is fresh
   });
 
   if (isLoading) {
