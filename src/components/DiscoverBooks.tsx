@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -15,31 +14,21 @@ interface Book {
 }
 
 const DiscoverBooks = () => {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: books, isLoading } = useQuery({
+    queryKey: ['available-books'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('books')
+        .select('*')
+        .eq('status', 'available')
+        .order('created_at', { ascending: false });
 
-  useEffect(() => {
-    const fetchAvailableBooks = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('books')
-          .select('*')
-          .eq('status', 'available')
-          .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as Book[];
+    }
+  });
 
-        if (error) throw error;
-        setBooks(data || []);
-      } catch (error) {
-        console.error('Error fetching available books:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAvailableBooks();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         {[1, 2, 3].map((i) => (
@@ -56,7 +45,7 @@ const DiscoverBooks = () => {
     );
   }
 
-  if (books.length === 0) {
+  if (!books || books.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
         <p>No books are available for borrowing at the moment.</p>
