@@ -6,9 +6,23 @@ import { Button } from "@/components/ui/button";
 import MessageList from '@/components/messages/MessageList';
 import MessageComposer from '@/components/messages/MessageComposer';
 
+type Message = {
+  id: string;
+  content: string;
+  sender_id: string;
+  receiver_id: string;
+  created_at: string;
+};
+
+type RealtimePayload = {
+  new: Message;
+  old: Message;
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+};
+
 const Messages = () => {
   const { user, profile } = useAuth();
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [users, setUsers] = useState<any[]>([]);
 
@@ -59,7 +73,7 @@ const Messages = () => {
           schema: 'public',
           table: 'messages',
         },
-        (payload) => {
+        (payload: RealtimePayload) => {
           if (payload.new && 
               ((payload.new.sender_id === user?.id && payload.new.receiver_id === selectedUserId) ||
                (payload.new.sender_id === selectedUserId && payload.new.receiver_id === user?.id))) {
