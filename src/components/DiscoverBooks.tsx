@@ -27,12 +27,12 @@ const DiscoverBooks = () => {
         .from('books')
         .select('*')
         .eq('status', 'available')
+        .neq('owner_id', user?.id) // Don't show user's own books
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as Book[];
     },
-    refetchInterval: 2000,
     enabled: !!user, // Only fetch if user is authenticated
   });
 
