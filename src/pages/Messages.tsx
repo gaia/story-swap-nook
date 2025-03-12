@@ -5,14 +5,9 @@ import { Button } from "@/components/ui/button";
 import MessageList from '@/components/messages/MessageList';
 import MessageComposer from '@/components/messages/MessageComposer';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import { Database } from '@/lib/database.types';
 
-type Message = {
-  id: string;
-  content: string;
-  sender_id: string;
-  receiver_id: string;
-  created_at: string;
-};
+type Message = Database['public']['Tables']['messages']['Row'];
 
 type RealtimePayload = {
   new: Message;
@@ -50,8 +45,7 @@ const Messages = () => {
       const { data, error } = await supabase
         .from('messages')
         .select('*')
-        .or(`sender_id.eq.${user?.id},receiver_id.eq.${user?.id}`)
-        .or(`sender_id.eq.${selectedUserId},receiver_id.eq.${selectedUserId}`)
+        .or(`and(sender_id.eq.${user?.id},receiver_id.eq.${selectedUserId}),and(sender_id.eq.${selectedUserId},receiver_id.eq.${user?.id})`)
         .order('created_at', { ascending: true });
 
       if (error) {
@@ -63,8 +57,7 @@ const Messages = () => {
 
     fetchMessages();
 
-    const channel = supabase
-      .channel('messages_channel')
+    const channel = supabase.channel('messages_channel')
       .on(
         'postgres_changes',
         {
@@ -73,7 +66,7 @@ const Messages = () => {
           table: 'messages',
           filter: `sender_id=eq.${user?.id},receiver_id=eq.${selectedUserId}`
         },
-        (payload: RealtimePayload) => {
+        (payload: { new: Message }) => {
           if (payload.new && 
               ((payload.new.sender_id === user?.id && payload.new.receiver_id === selectedUserId) ||
                (payload.new.sender_id === selectedUserId && payload.new.receiver_id === user?.id))) {
