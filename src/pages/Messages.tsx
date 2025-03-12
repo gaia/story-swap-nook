@@ -9,12 +9,6 @@ import { Database } from '@/lib/database.types';
 
 type Message = Database['public']['Tables']['messages']['Row'];
 
-type RealtimePayload = {
-  new: Message;
-  old: Message;
-  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
-};
-
 const Messages = () => {
   const { user, profile } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -74,7 +68,7 @@ const Messages = () => {
           }
         }
       )
-      .subscribe() as RealtimeChannel;
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
