@@ -2,6 +2,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 interface Book {
   id: string;
@@ -15,6 +18,8 @@ interface Book {
 }
 
 const DiscoverBooks = () => {
+  const { user } = useAuth();
+
   const { data: books, isLoading } = useQuery({
     queryKey: ['available-books'],
     queryFn: async () => {
@@ -27,8 +32,20 @@ const DiscoverBooks = () => {
       if (error) throw error;
       return data as Book[];
     },
-    refetchInterval: 2000, // Refetch every 2 seconds to ensure data is fresh
+    refetchInterval: 2000,
+    enabled: !!user, // Only fetch if user is authenticated
   });
+
+  if (!user) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500 mb-4">Please sign in to view available books.</p>
+        <Button asChild>
+          <Link to="/auth">Sign In</Link>
+        </Button>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
