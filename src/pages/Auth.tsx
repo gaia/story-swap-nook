@@ -4,6 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 
 const Auth = () => {
@@ -13,7 +20,7 @@ const Auth = () => {
     email: '',
     password: '',
     fullName: '',
-    location: '',
+    location: 'Barcelona',
   });
   const navigate = useNavigate();
 
@@ -70,6 +77,13 @@ const Auth = () => {
     }));
   };
 
+  const handleLocationChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      location: value
+    }));
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -106,14 +120,18 @@ const Auth = () => {
                   onChange={handleChange}
                   required
                 />
-                <Input
-                  name="location"
-                  type="text"
-                  placeholder="Location"
+                <Select
                   value={formData.location}
-                  onChange={handleChange}
+                  onValueChange={handleLocationChange}
                   required
-                />
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select your location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Barcelona">Barcelona</SelectItem>
+                  </SelectContent>
+                </Select>
               </>
             )}
           </div>
