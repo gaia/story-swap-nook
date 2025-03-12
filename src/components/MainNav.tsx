@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { BookOpen, Library, LogOut, MapPin, User } from "lucide-react";
+import { BookOpen, Library, LogOut, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -20,7 +19,6 @@ const MainNav = () => {
   const navItems = [
     { name: 'Discover', icon: BookOpen, route: 'discover' },
     { name: 'My Library', icon: Library, route: 'library' },
-    { name: 'Location', icon: MapPin, route: 'location' },
     { name: 'Profile', icon: User, route: 'profile' },
   ];
 
