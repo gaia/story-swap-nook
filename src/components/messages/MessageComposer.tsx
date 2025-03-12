@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MessageComposerProps {
   receiverId: string;
@@ -12,14 +13,16 @@ interface MessageComposerProps {
 const MessageComposer = ({ receiverId, onMessageSent }: MessageComposerProps) => {
   const [content, setContent] = useState('');
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!content.trim() || !user) return;
 
     const { data, error } = await supabase
       .from('messages')
       .insert({
+        sender_id: user.id,
         receiver_id: receiverId,
         content: content.trim(),
       })

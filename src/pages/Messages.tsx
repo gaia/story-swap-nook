@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { Button } from "@/components/ui/button";
 import MessageList from '@/components/messages/MessageList';
 import MessageComposer from '@/components/messages/MessageComposer';
-import Footer from '@/components/Footer';
+import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout';
 
 type Message = {
   id: string;
@@ -17,7 +18,7 @@ type Message = {
 }
 
 const Messages = () => {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [users, setUsers] = useState<any[]>([]);
@@ -83,9 +84,9 @@ const Messages = () => {
   }, [selectedUserId, user?.id]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Messages</h1>
+    <AuthenticatedLayout>
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Messages</h1>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="space-y-4">
             <h2 className="text-lg font-semibold mb-4">Users</h2>
@@ -118,8 +119,7 @@ const Messages = () => {
           </div>
         </div>
       </div>
-      <Footer />
-    </div>
+    </AuthenticatedLayout>
   );
 };
 
