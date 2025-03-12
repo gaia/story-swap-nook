@@ -1,15 +1,22 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { BookOpen, Library, LogOut, MapPin, MessageCircle, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const MainNav = () => {
-  const [active, setActive] = useState('discover');
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [active, setActive] = useState('');
+
+  useEffect(() => {
+    // Extract the current route from the pathname
+    const currentRoute = location.pathname.replace('/', '') || 'discover';
+    setActive(currentRoute);
+  }, [location]);
 
   const navItems = [
     { name: 'Discover', icon: BookOpen, route: 'discover' },
@@ -21,9 +28,7 @@ const MainNav = () => {
 
   const handleNavigation = (route: string) => {
     setActive(route);
-    if (route === 'messages') {
-      navigate('/messages');
-    }
+    navigate(`/${route === 'discover' ? '' : route}`);
   };
 
   return (
@@ -35,7 +40,9 @@ const MainNav = () => {
             variant="ghost"
             className={cn(
               "flex items-center space-x-2",
-              active === item.route ? "text-primary" : "text-gray-500"
+              active === item.route 
+                ? "text-primary bg-primary/10 rounded-lg" 
+                : "text-gray-500"
             )}
             onClick={() => handleNavigation(item.route)}
           >
